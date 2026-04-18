@@ -1,0 +1,136 @@
+/* ── Google Fonts (must be first) ────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Styles ──────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply font-sans text-gray-800 bg-gray-50 antialiased;
+  }
+
+  h1, h2, h3 {
+    @apply font-heading;
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-600 rounded-full;
+  }
+}
+
+/* ── Component Styles ─────────────────────────────────────────────────────── */
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary-600 text-white px-6 py-2.5 rounded-lg font-medium
+           hover:bg-primary-700 active:bg-primary-800 transition-colors duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-gold {
+    @apply bg-gold-500 text-primary-900 px-6 py-2.5 rounded-lg font-semibold
+           hover:bg-gold-600 active:bg-gold-700 transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-600 text-primary-600 px-6 py-2 rounded-lg font-medium
+           hover:bg-primary-600 hover:text-white transition-colors duration-200;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100
+           hover:shadow-md transition-shadow duration-300;
+  }
+
+  /* Form inputs */
+  .input {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-800
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           placeholder-gray-400 transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-surplus {
+    @apply badge bg-red-100 text-red-700;
+  }
+
+  .badge-regular {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  /* Gold gradient text */
+  .text-gold-gradient {
+    @apply bg-gradient-to-r from-gold-500 to-gold-600 bg-clip-text text-transparent;
+  }
+
+  /* Section headings */
+  .section-title {
+    @apply text-3xl font-heading font-bold text-primary-600 mb-2;
+  }
+
+  .section-subtitle {
+    @apply text-gray-500 text-lg mb-8;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin;
+  }
+
+  /* Page wrapper */
+  .page-wrapper {
+    @apply min-h-screen bg-gray-50;
+  }
+}
+
+/* ── Surplus Deal Card Glow ─────────────────────────────────────────────────── */
+.surplus-card {
+  border: 1px solid #f5c438;
+  box-shadow: 0 0 0 1px rgba(245, 196, 56, 0.2);
+}
+
+/* ── Hero gradient overlay ────────────────────────────────────────────────── */
+.hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 58, 107, 0.92) 0%,
+    rgba(26, 58, 107, 0.75) 60%,
+    rgba(26, 58, 107, 0.4) 100%
+  );
+}
+
+/* ── Star rating ──────────────────────────────────────────────────────────── */
+.star-filled { color: #f5c438; }
+.star-empty  { color: #d1d5db; }
