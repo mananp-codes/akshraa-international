@@ -32,7 +32,7 @@ app.use(helmet());
 
   app.use(
   cors({
-    origin: "http://localhost:5173", // frontend URL
+    origin: "http://localhost:5173",  // frontend URL
     credentials: true, // IMPORTANT
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -113,7 +113,7 @@ app.use('*', (req, res) => {
 app.use(errorHandler);
 
 // ── Start Server ──────────────────────────────────────────────────────────────
-const PORT = 3000 || 3000;
+const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log('\n══════════════════════════════════════════════════════');
   console.log('  🌟 AKSHRAA INTERNATIONAL - Backend API Server');
