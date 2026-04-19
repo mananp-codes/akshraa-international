@@ -94,8 +94,7 @@ const login = asyncHandler(async (req, res) => {
   }
 
   // Update last login time
-  user.lastLogin = new Date();
-  await user.save({ validateBeforeSave: false });
+   await User.updateOne({ _id: user._id }, { lastLogin: new Date() });
 
   sendTokenResponse(user, 200, res);
 });

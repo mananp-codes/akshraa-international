@@ -30,6 +30,15 @@ const app = express();
 // Helmet adds security headers to all responses
 app.use(helmet());
 
+  app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend URL
+    credentials: true, // IMPORTANT
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.use(express.json());
 // Rate limiting: max 100 requests per 15 minutes per IP
 // Prevents brute force and DDoS attacks
 const limiter = rateLimit({
@@ -41,31 +50,14 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// ── CORS Configuration ────────────────────────────────────────────────────────
-// Allow requests from frontend URL only
-const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      process.env.CLIENT_URL || 'http://localhost:5173',
-      'http://localhost:3000', // Alternative dev port
-      'http://localhost:5174',
-    ];
 
-    // Allow requests with no origin (mobile apps, curl, Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow cookies and auth headers
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-app.use(cors(corsOptions));
+
+
+  
+
 
 // ── Body Parser ───────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));           // Parse JSON bodies
+    // Parse JSON bodies
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Parse URL-encoded bodies
 
 // ── Logger (Development only) ─────────────────────────────────────────────────
@@ -121,7 +113,7 @@ app.use('*', (req, res) => {
 app.use(errorHandler);
 
 // ── Start Server ──────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
+const PORT = 3000 || 3000;
 const server = app.listen(PORT, () => {
   console.log('\n══════════════════════════════════════════════════════');
   console.log('  🌟 AKSHRAA INTERNATIONAL - Backend API Server');
