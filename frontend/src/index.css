@@ -1,0 +1,229 @@
+/* ── Google Fonts (must be first) ────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Styles ──────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-ink bg-paper-100 antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  /* Visible keyboard focus for accessibility */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #f5c438;
+    outline-offset: 2px;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-paper-200;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-600 rounded-full;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ── Component Styles ─────────────────────────────────────────────────────── */
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary-600 text-white px-6 py-2.5 rounded-lg font-medium
+           hover:bg-primary-700 active:bg-primary-800 transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed
+           shadow-[0_1px_2px_rgba(15,34,64,0.08)] hover:shadow-[0_4px_14px_rgba(26,58,107,0.25)];
+  }
+
+  .btn-gold {
+    @apply bg-gold-500 text-primary-900 px-6 py-2.5 rounded-lg font-semibold
+           hover:bg-gold-400 active:bg-gold-600 transition-all duration-200
+           shadow-[0_1px_2px_rgba(140,112,18,0.15)] hover:shadow-[0_4px_14px_rgba(245,196,56,0.35)];
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-600 text-primary-600 px-6 py-2 rounded-lg font-medium
+           hover:bg-primary-600 hover:text-white transition-colors duration-200;
+  }
+
+  .btn-ghost {
+    @apply text-primary-600 px-4 py-2 rounded-lg font-medium
+           hover:bg-primary-50 transition-colors duration-200;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl shadow-[0_1px_3px_rgba(15,34,64,0.06)] border border-paper-200
+           hover:shadow-[0_8px_24px_rgba(15,34,64,0.08)] transition-shadow duration-300;
+  }
+
+  /* Form inputs */
+  .input {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg text-ink bg-white
+           focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500
+           placeholder-gray-400 transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-surplus {
+    @apply badge bg-red-100 text-red-700;
+  }
+
+  .badge-regular {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  /* Gold gradient text */
+  .text-gold-gradient {
+    @apply bg-gradient-to-r from-gold-500 to-gold-600 bg-clip-text text-transparent;
+  }
+
+  /* Eyebrow label — small caps tracked-out label used above headings */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest2
+           text-gold-600;
+  }
+
+  /* Section headings */
+  .section-title {
+    @apply text-3xl md:text-4xl font-heading font-bold text-primary-600 mb-2 tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-gray-500 text-lg mb-8;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin;
+  }
+
+  /* Page wrapper */
+  .page-wrapper {
+    @apply min-h-screen bg-paper-100;
+  }
+}
+
+/* ── Surplus Deal Card Glow ─────────────────────────────────────────────────── */
+.surplus-card {
+  border: 1px solid #f5c438;
+  box-shadow: 0 0 0 1px rgba(245, 196, 56, 0.18);
+}
+
+/* ── Hero gradient overlay ────────────────────────────────────────────────── */
+.hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 22, 43, 0.96) 0%,
+    rgba(15, 34, 64, 0.88) 55%,
+    rgba(26, 58, 107, 0.55) 100%
+  );
+}
+
+/* ── Star rating ──────────────────────────────────────────────────────────── */
+.star-filled { color: #f5c438; }
+.star-empty  { color: #d1d5db; }
+
+/* ── Woven thread divider — signature motif ──────────────────────────────────
+   A thin horizontal "stitch" rule referencing textile seams, used to separate
+   major sections instead of a plain border. */
+.thread-divider {
+  position: relative;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(26, 58, 107, 0.18) 0,
+    rgba(26, 58, 107, 0.18) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+/* ── Swatch card — used for category tiles, evokes fabric sample cards ───── */
+.swatch-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.swatch-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+}
+
+/* ── Fine print texture for hero / dark sections ─────────────────────────── */
+.weave-texture {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px);
+}
+
+/* ── Animated underline for nav-style links ──────────────────────────────── */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 0;
+  background: #f5c438;
+  transition: width 0.25s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
+}
