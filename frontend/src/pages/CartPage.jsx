@@ -189,6 +189,12 @@ const CartPage = () => {
                         value={shippingAddress[key]}
                         onChange={(e) => setShippingAddress((p) => ({ ...p, [key]: e.target.value }))}
                         required
+                        onKeyPress={(e) => {
+    if (key === 'phone' || key === 'pincode') {
+      if (!/[0-9]/.test(e.key)) e.preventDefault();
+    }
+  }}
+  maxLength={key === 'phone' ? 10 : key === 'pincode' ? 6 : undefined}
                       />
                     </div>
                   ))}
