@@ -13,6 +13,25 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import StarRating from '../components/common/StarRating';
 
 const ProductDetailPage = () => {
+  const [userRating, setUserRating] = useState(0);
+const [reviewComment, setReviewComment] = useState('');
+
+const handleSubmitReview = async () => {
+  if (!userRating) return alert('Please select a rating');
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/products/${id}/reviews`, {
+      rating: userRating,
+      comment: reviewComment
+    }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    alert('Review submitted successfully!');
+    setUserRating(0);
+    setReviewComment('');
+  } catch (err) {
+    alert('You must be logged in to submit a review');
+  }
+};
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -220,6 +239,30 @@ const ProductDetailPage = () => {
           </div>
         </div>
       </div>
+      {/* Review Form */}
+<div className="mt-8 p-6 bg-white rounded-xl shadow-sm">
+  <h3 className="text-lg font-bold mb-4">Write a Review</h3>
+  <div className="flex gap-1 mb-3">
+    {[1,2,3,4,5].map((star) => (
+      <span key={star} onClick={() => setUserRating(star)} className="cursor-pointer text-2xl">
+        {star <= userRating ? '⭐' : '☆'}
+      </span>
+    ))}
+  </div>
+  <textarea
+    className="w-full border rounded p-2 mt-2"
+    rows={3}
+    placeholder="Write your review..."
+    value={reviewComment}
+    onChange={(e) => setReviewComment(e.target.value)}
+  />
+  <button
+    onClick={handleSubmitReview}
+    className="mt-3 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+  >
+    Submit Review
+  </button>
+</div>
     </div>
   );
 };

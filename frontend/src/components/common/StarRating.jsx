@@ -1,13 +1,17 @@
 import { FiStar } from 'react-icons/fi';
 import { AiFillStar } from 'react-icons/ai';
 
-const StarRating = ({ rating = 0, numReviews = 0, size = 'sm' }) => {
+const StarRating = ({ rating = 0, numReviews = 0, size = 'sm', interactive = false, onRate }) => {
   const sizeClass = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
   return (
     <div className="flex items-center gap-1">
       <div className="flex">
         {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star}>
+          <span
+            key={star}
+            onClick={() => interactive && onRate && onRate(star)}
+            className={interactive ? 'cursor-pointer' : ''}
+          >
             {star <= Math.round(rating) ? (
               <AiFillStar className={`${sizeClass} star-filled`} />
             ) : (
