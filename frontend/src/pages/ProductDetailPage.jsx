@@ -24,7 +24,7 @@ const ProductDetailPage = () => {
       rating: userRating,
       comment: reviewComment
     }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
     });
     alert('Review submitted successfully!');
     setUserRating(0);
