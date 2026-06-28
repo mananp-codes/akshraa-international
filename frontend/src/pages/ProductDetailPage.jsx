@@ -241,6 +241,23 @@ const ProductDetailPage = () => {
         </div>
       </div>
       {/* Review Form */}
+      {/* Display Reviews */}
+{product.reviews && product.reviews.length > 0 && (
+  <div className="mt-8 p-6 bg-white rounded-xl shadow-sm">
+    <h3 className="text-lg font-bold mb-4">Customer Reviews ({product.numReviews})</h3>
+    {product.reviews.map((review, index) => (
+      <div key={index} className="border-b pb-4 mb-4 last:border-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-medium">{review.user?.name || 'Anonymous'}</span>
+          <span className="text-yellow-400">
+            {'⭐'.repeat(review.rating)}
+          </span>
+        </div>
+        <p className="text-gray-600 text-sm">{review.comment}</p>
+      </div>
+    ))}
+  </div>
+)}
 <div className="mt-8 p-6 bg-white rounded-xl shadow-sm">
   <h3 className="text-lg font-bold mb-4">Write a Review</h3>
   <div className="flex gap-1 mb-3">
