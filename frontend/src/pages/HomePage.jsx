@@ -89,7 +89,7 @@ const HomePage = () => {
                 B2B Textile Sourcing · Since Surat
               </div>
 
-              <h1 className="font-heading text-5xl md:text-6xl font-bold text-white mb-6 leading-[1.08] tracking-tight">
+              <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.08] tracking-tight">
                 Quality textiles,
                 <br />
                 <span className="text-gold-gradient">sourced direct</span>

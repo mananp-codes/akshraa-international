@@ -34,10 +34,12 @@ const ProductCard = ({ product }) => {
 
         {/* Product Image */}
         <div className="relative overflow-hidden h-52 bg-paper-200">
-          <img
-            src={product.images?.[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image'}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-out"
+         <img
+           src={product.images?.[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image'}
+          alt={product.name}
+          loading="lazy"
+         onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'; }}
+        className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-out"
           />
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
