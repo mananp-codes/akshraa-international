@@ -11,12 +11,13 @@ import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import StarRating from '../components/common/StarRating';
+import axios from 'axios';
 
 const ProductDetailPage = () => {
   const [userRating, setUserRating] = useState(0);
-const [reviewComment, setReviewComment] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
 
-const handleSubmitReview = async () => {
+  const handleSubmitReview = async () => {
   if (!userRating) return alert('Please select a rating');
   try {
     await axios.post(`${import.meta.env.VITE_API_URL}/products/${id}/reviews`, {

@@ -58,6 +58,6 @@ router.delete(
 );
 
 // Add review (buyers only)
-router.post('/:id/reviews', protect, authorize('buyer'), addReview);
+router.post('/:id/reviews', protect, authorize('buyer', 'seller', 'admin'), addReview);
 
 module.exports = router;
