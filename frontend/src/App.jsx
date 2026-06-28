@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // ── Public Pages ──────────────────────────────────────────────────────────────
 import HomePage from './pages/HomePage';
@@ -57,6 +58,7 @@ const NotFoundPage = () => (
 const App = () => {
   return (
     <Router>
+        <ScrollToTop /> 
       {/* ── Toast Notifications ─────────────────────────────────────────────── */}
       <Toaster
         position="top-right"
