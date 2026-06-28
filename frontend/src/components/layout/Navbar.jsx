@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FiShoppingCart, FiUser, FiMenu, FiX, FiLogOut, FiSettings, FiPackage } from 'react-icons/fi';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
@@ -15,6 +15,7 @@ const Navbar = () => {
   const { user, logout } = useAuthStore();
   const totalItems = useCartStore((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -51,9 +52,11 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-colors link-underline ${
-                  link.gold ? 'text-gold-400' : 'text-white/90 hover:text-white'
-                }`}
+               className={`text-sm font-medium transition-colors link-underline ${
+               location.pathname === link.path.split('?')[0] 
+              ? 'text-gold-400' 
+              : 'text-white/90 hover:text-white'
+              }`}
               >
                 {link.label}
               </Link>
