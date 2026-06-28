@@ -52,11 +52,13 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-               className={`text-sm font-medium transition-colors link-underline ${
-               location.pathname === link.path.split('?')[0] 
-              ? 'text-gold-400' 
-              : 'text-white/90 hover:text-white'
-              }`}
+              className={`text-sm font-medium transition-colors link-underline ${
+                location.pathname === link.path.split('?')[0] && !location.search && !link.gold
+                ? 'text-gold-400'
+                : location.pathname === link.path.split('?')[0] && location.search === '?stockType=Surplus' && link.gold
+                ? 'text-gold-400'
+                : 'text-white/90 hover:text-white'
+        }`}
               >
                 {link.label}
               </Link>
