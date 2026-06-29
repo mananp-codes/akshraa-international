@@ -18,6 +18,7 @@ const {
   getAllOrders,
   updateOrderStatus,
   getOrderStats,
+  cancelOrder,
 } = require('../controllers/orderController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -36,5 +37,6 @@ router.put('/:id/status', authorize('admin'), updateOrderStatus);
 
 // Single order (owner or admin - checked inside controller)
 router.get('/:id', getOrderById);
+router.put('/:id/cancel', cancelOrder);
 
 module.exports = router;

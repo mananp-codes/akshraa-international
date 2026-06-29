@@ -68,6 +68,35 @@ const OrderDetailPage = () => {
             <StatusIcon className="w-4 h-4" />
             {status.label}
           </span>
+          {['pending', 'confirmed', 'processing'].includes(order.status) && (
+  <button
+    onClick={async () => {
+      if (window.confirm('Are you sure you want to cancel this order?')) {
+        try {
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/orders/${order._id}/cancel`,
+            {
+              method: 'PUT',
+              headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+            }
+          );
+          const data = await res.json();
+          if (data.success) {
+            alert('Order cancelled!');
+            window.location.reload();
+          } else {
+            alert(data.message);
+          }
+        } catch (err) {
+          alert('Failed to cancel order');
+        }
+      }
+    }}
+    className="ml-3 px-4 py-2 bg-red-500 text-white text-sm rounded-xl hover:bg-red-600"
+  >
+    Cancel Order
+  </button>
+)}
         </div>
 
         {/* Progress Bar (only for non-cancelled orders) */}
