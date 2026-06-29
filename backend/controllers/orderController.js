@@ -288,6 +288,23 @@ const getOrderStats = asyncHandler(async (req, res) => {
   });
 });
 
+const cancelOrder = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ message: 'Order not found' });
+
+  if (['shipped', 'delivered'].includes(order.status)) {
+    return res.status(400).json({ message: 'Order cannot be cancelled at this stage' });
+  }
+
+  if (order.buyer.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Not authorized' });
+  }
+
+  order.status = 'cancelled';
+  await order.save();
+  res.json({ success: true, message: 'Order cancelled successfully' });
+});
+
 module.exports = {
   createOrder,
   verifyPayment,
@@ -296,4 +313,5 @@ module.exports = {
   getAllOrders,
   updateOrderStatus,
   getOrderStats,
+  cancelOrder,
 };
