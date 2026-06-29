@@ -2,13 +2,14 @@
  * Cart Page with Razorpay checkout
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiTrash2, FiShoppingBag, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 import { createOrder, verifyPayment } from '../api/orderApi';
+import axios from 'axios';
 
 const CartPage = () => {
   const items = useCartStore((state) => state.items);
@@ -24,6 +25,16 @@ const CartPage = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState([]);
+const [showAddressForm, setShowAddressForm] = useState(false);
+
+useEffect(() => {
+  if (user) {
+    axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+    }).then(res => setSavedAddresses(res.data.addresses || [])).catch(() => {});
+  }
+}, [user]);
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
     phone: user?.phone || '',
@@ -168,6 +179,35 @@ const CartPage = () => {
                   );
                 })}
               </div>
+              {/* Saved Addresses */}
+{savedAddresses.length > 0 && (
+  <div className="mb-4">
+    <h4 className="font-medium mb-2">Select Saved Address</h4>
+    {savedAddresses.map((addr) => (
+      <div
+        key={addr._id}
+        onClick={() => setShippingAddress({
+          fullName: addr.fullName,
+          phone: addr.phone,
+          street: addr.street,
+          city: addr.city,
+          state: addr.state,
+          country: addr.country,
+          pincode: addr.pincode,
+        })}
+        className="border rounded-lg p-3 mb-2 cursor-pointer hover:border-blue-500"
+      >
+        <span className="font-medium">{addr.label}</span> — {addr.fullName}, {addr.street}, {addr.city} {addr.pincode} 📞 {addr.phone}
+      </div>
+    ))}
+    <button
+      onClick={() => setShowAddressForm(!showAddressForm)}
+      className="text-blue-600 text-sm mt-1"
+    >
+      + Add New Address
+    </button>
+  </div>
+)}
             ) : (
               /* Shipping Address Form */
               <div className="card p-6">

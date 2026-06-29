@@ -225,6 +225,34 @@ const getAdminStats = asyncHandler(async (req, res) => {
   });
 });
 
+const addAddress = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  const { label, fullName, phone, street, city, state, country, pincode, isDefault } = req.body;
+
+  if (isDefault) {
+    user.addresses.forEach(addr => addr.isDefault = false);
+  }
+
+  user.addresses.push({ label, fullName, phone, street, city, state, country, pincode, isDefault });
+  await user.save();
+
+  res.status(201).json({ success: true, addresses: user.addresses });
+});
+
+const deleteAddress = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  user.addresses = user.addresses.filter(
+    addr => addr._id.toString() !== req.params.addressId
+  );
+  await user.save();
+  res.json({ success: true, addresses: user.addresses });
+});
+
+const getAddresses = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  res.json({ success: true, addresses: user.addresses });
+});
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -234,4 +262,7 @@ module.exports = {
   getPendingSellers,
   getSellerDashboard,
   getAdminStats,
+  addAddress,
+  deleteAddress,
+  getAddresses,
 };

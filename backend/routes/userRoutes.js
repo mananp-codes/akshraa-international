@@ -13,6 +13,8 @@ const {
   getPendingSellers,
   getSellerDashboard,
   getAdminStats,
+  addAddress,
+  deleteAddress,
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -28,7 +30,10 @@ router.get('/sellers/pending', authorize('admin'), getPendingSellers);
 router.get('/', authorize('admin'), getAllUsers);
 router.get('/:id', authorize('admin'), getUserById);
 router.put('/:id/approve', authorize('admin'), approveUser);
+// — Address Routes
+router.post('/addresses', addAddress);
+router.delete('/addresses/:addressId', deleteAddress);
 router.put('/:id/activate', authorize('admin'), toggleUserStatus);
 router.delete('/:id', authorize('admin'), deleteUser);
-
+router.get('/addresses', getAddresses);
 module.exports = router;
