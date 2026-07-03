@@ -264,5 +264,4 @@ module.exports = {
   getAdminStats,
   addAddress,
   deleteAddress,
-  getAddresses,
 };

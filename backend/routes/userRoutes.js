@@ -15,6 +15,7 @@ const {
   getAdminStats,
   addAddress,
   deleteAddress,
+  getAddresses, 
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/auth');
 
