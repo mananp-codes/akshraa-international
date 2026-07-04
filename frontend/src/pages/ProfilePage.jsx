@@ -101,7 +101,7 @@ const ProfilePage = () => {
 
         {/* Tabs */}
         <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6 w-fit">
-          {['profile', 'password'].map(tab => (
+          {['profile', 'password', 'addresses'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -109,7 +109,7 @@ const ProfilePage = () => {
                 activeTab === tab ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {tab === 'profile' ? '👤 Profile' : '🔒 Password'}
+              {tab === 'profile' ? '👤 Profile' : tab === 'password' ? '🔒 Password' : '📍 Addresses'}
             </button>
           ))}
         </div>
@@ -223,6 +223,56 @@ const ProfilePage = () => {
             </div>
           </form>
         )}
+        {/* Addresses Tab */}
+{activeTab === 'addresses' && (
+  <div className="max-w-2xl space-y-4">
+    <div className="card p-6">
+      <h3 className="font-semibold text-gray-800 mb-4">Saved Addresses</h3>
+      {addresses.map(addr => (
+        <div key={addr._id} className="border rounded-lg p-4 mb-3 flex justify-between items-start">
+          <div>
+            <span className="font-medium text-primary-600">{addr.label}</span>
+            {addr.isDefault && <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Default</span>}
+            <p className="text-sm text-gray-600 mt-1">{addr.fullName} — 📞 {addr.phone}</p>
+            <p className="text-sm text-gray-600">{addr.street}, {addr.city}, {addr.state} — {addr.pincode}</p>
+          </div>
+          <button onClick={() => handleDeleteAddress(addr._id)} className="text-red-500 text-sm hover:text-red-700">Delete</button>
+        </div>
+      ))}
+      <button onClick={() => setShowAddForm(!showAddForm)} className="mt-2 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm">
+        + Add New Address
+      </button>
+      {showAddForm && (
+        <div className="mt-4 border rounded-lg p-4 space-y-3">
+          {[
+            { label: 'Label (Home/Office)', key: 'label' },
+            { label: 'Full Name', key: 'fullName' },
+            { label: 'Phone', key: 'phone' },
+            { label: 'Street Address', key: 'street' },
+            { label: 'City', key: 'city' },
+            { label: 'State', key: 'state' },
+            { label: 'Country', key: 'country' },
+            { label: 'Pincode', key: 'pincode' },
+          ].map(({ label, key }) => (
+            <div key={key}>
+              <label className="label">{label}</label>
+              <input
+                className="input"
+                value={newAddress[key]}
+                onChange={e => setNewAddress(p => ({ ...p, [key]: e.target.value }))}
+              />
+            </div>
+          ))}
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={newAddress.isDefault} onChange={e => setNewAddress(p => ({ ...p, isDefault: e.target.checked }))} />
+            Set as default address
+          </label>
+          <button onClick={handleAddAddress} className="bg-primary-600 text-white px-6 py-2 rounded-lg">Save Address</button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
