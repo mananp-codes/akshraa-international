@@ -289,23 +289,32 @@ useEffect(() => {
 <button
   type="button"
   onClick={async () => {
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-        label: 'Saved Address',
-        ...shippingAddress,
-        isDefault: false
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-      });
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-      });
-      setSavedAddresses(res.data.addresses);
-      toast.success('Address saved!');
-    } catch (err) {
-      toast.error('Failed to save address');
+  try {
+    const isDuplicate = savedAddresses.some(addr =>
+      addr.street === shippingAddress.street &&
+      addr.city === shippingAddress.city &&
+      addr.pincode === shippingAddress.pincode
+    );
+    if (isDuplicate) {
+      toast.error('This address is already saved!');
+      return;
     }
-  }}
+    await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+      label: 'Saved Address',
+      ...shippingAddress,
+      isDefault: false
+    }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+    });
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+    });
+    setSavedAddresses(res.data.addresses);
+    toast.success('Address saved!');
+  } catch (err) {
+    toast.error('Failed to save address');
+  }
+}}
   className="w-full mt-2 border-2 border-primary-600 text-primary-600 py-2 rounded-lg hover:bg-primary-50 text-sm font-medium"
 >
   💾 Save This Address
