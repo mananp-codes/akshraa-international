@@ -26,7 +26,7 @@ const CartPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState([]);
-  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [editingAddr, setEditingAddr] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -47,6 +47,66 @@ const CartPage = () => {
   const tax = Math.round(subtotal * 0.18);
   const shipping = subtotal > 10000 ? 0 : 500;
   const total = subtotal + tax + shipping;
+
+  const refreshAddresses = async () => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+    });
+    setSavedAddresses(res.data.addresses || []);
+  };
+
+  const handleSaveAddress = async () => {
+    try {
+      if (editingAddr) {
+        // Delete old and add updated
+        await axios.delete(`${import.meta.env.VITE_API_URL}/users/addresses/${editingAddr}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+        });
+        await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+          label: 'Saved Address',
+          ...shippingAddress,
+          isDefault: false
+        }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+        });
+        setEditingAddr(null);
+        toast.success('Address updated!');
+      } else {
+        const isDuplicate = savedAddresses.some(addr =>
+          addr.street === shippingAddress.street &&
+          addr.city === shippingAddress.city &&
+          addr.pincode === shippingAddress.pincode
+        );
+        if (isDuplicate) {
+          toast.error('This address is already saved!');
+          return;
+        }
+        await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+          label: 'Saved Address',
+          ...shippingAddress,
+          isDefault: false
+        }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+        });
+        toast.success('Address saved!');
+      }
+      await refreshAddresses();
+    } catch (err) {
+      toast.error('Failed to save address');
+    }
+  };
+
+  const handleDeleteAddress = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/users/addresses/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+      });
+      setSavedAddresses(savedAddresses.filter(a => a._id !== id));
+      toast.success('Address deleted!');
+    } catch {
+      toast.error('Failed to delete address');
+    }
+  };
 
   const handleCheckout = async () => {
     if (!user) { toast.error('Please login to checkout'); return navigate('/login'); }
@@ -178,32 +238,67 @@ const CartPage = () => {
                 })}
               </div>
             ) : (
-              /* Shipping Address Form */
               <div className="card p-6">
                 <h3 className="font-semibold text-lg mb-4">Shipping Address</h3>
 
-                {/* Saved Addresses Selector */}
+                {/* Saved Addresses */}
                 {savedAddresses.length > 0 && (
                   <div className="mb-4">
-                    <h4 className="font-medium mb-2">Select Saved Address</h4>
+                    <h4 className="font-medium mb-2 text-sm text-gray-600">Your Saved Addresses</h4>
                     {savedAddresses.map((addr) => (
-                      <div
-                        key={addr._id}
-                        onClick={() => setShippingAddress({
-                          fullName: addr.fullName,
-                          phone: addr.phone,
-                          street: addr.street,
-                          city: addr.city,
-                          state: addr.state,
-                          country: addr.country,
-                          pincode: addr.pincode,
-                        })}
-                        className="border rounded-lg p-3 mb-2 cursor-pointer hover:border-blue-500"
-                      >
-                        <span className="font-medium">{addr.label}</span> — {addr.fullName}, {addr.city} {addr.pincode} 📞 {addr.phone}
+                      <div key={addr._id} className="border rounded-lg p-3 mb-2 flex justify-between items-center hover:border-primary-400">
+                        <div
+                          className="flex-1 cursor-pointer"
+                          onClick={() => {
+                            setShippingAddress({
+                              fullName: addr.fullName,
+                              phone: addr.phone,
+                              street: addr.street,
+                              city: addr.city,
+                              state: addr.state,
+                              country: addr.country,
+                              pincode: addr.pincode,
+                            });
+                          }}
+                        >
+                          <span className="font-medium text-primary-600">{addr.label}</span>
+                          <p className="text-sm text-gray-600">{addr.fullName}, {addr.street}, {addr.city} {addr.pincode} 📞 {addr.phone}</p>
+                        </div>
+                        <div className="flex gap-2 ml-2 shrink-0">
+                          <button
+                            onClick={() => {
+                              setEditingAddr(addr._id);
+                              setShippingAddress({
+                                fullName: addr.fullName,
+                                phone: addr.phone,
+                                street: addr.street,
+                                city: addr.city,
+                                state: addr.state,
+                                country: addr.country,
+                                pincode: addr.pincode,
+                              });
+                            }}
+                            className="text-blue-500 text-xs hover:text-blue-700"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAddress(addr._id)}
+                            className="text-red-500 text-xs hover:text-red-700"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </div>
                     ))}
-                    <p className="text-xs text-gray-400 mb-3">Click an address to auto-fill the form below</p>
+                    <p className="text-xs text-gray-400 mb-3">Click an address to use it, or ✏️ to edit</p>
+                  </div>
+                )}
+
+                {/* Address Form */}
+                {editingAddr && (
+                  <div className="mb-2 p-2 bg-blue-50 rounded text-sm text-blue-600">
+                    ✏️ Editing address — make changes below and click Update Address
                   </div>
                 )}
 
@@ -235,40 +330,27 @@ const CartPage = () => {
                   ))}
                 </div>
 
-                {/* Save Address Button */}
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const isDuplicate = savedAddresses.some(addr =>
-                        addr.street === shippingAddress.street &&
-                        addr.city === shippingAddress.city &&
-                        addr.pincode === shippingAddress.pincode
-                      );
-                      if (isDuplicate) {
-                        toast.error('This address is already saved!');
-                        return;
-                      }
-                      await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-                        label: 'Saved Address',
-                        ...shippingAddress,
-                        isDefault: false
-                      }, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-                      });
-                      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-                      });
-                      setSavedAddresses(res.data.addresses);
-                      toast.success('Address saved!');
-                    } catch (err) {
-                      toast.error('Failed to save address');
-                    }
-                  }}
-                  className="w-full mt-3 border-2 border-primary-600 text-primary-600 py-2 rounded-lg hover:bg-primary-50 text-sm font-medium"
-                >
-                  💾 Save This Address
-                </button>
+                <div className="flex gap-2 mt-3">
+                  <button
+                    type="button"
+                    onClick={handleSaveAddress}
+                    className="flex-1 border-2 border-primary-600 text-primary-600 py-2 rounded-lg hover:bg-primary-50 text-sm font-medium"
+                  >
+                    {editingAddr ? '✏️ Update Address' : '💾 Save This Address'}
+                  </button>
+                  {editingAddr && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingAddr(null);
+                        setShippingAddress({ fullName: user?.name || '', phone: user?.phone || '', street: '', city: '', state: '', country: 'India', pincode: '' });
+                      }}
+                      className="px-4 border border-gray-300 text-gray-500 py-2 rounded-lg text-sm"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
