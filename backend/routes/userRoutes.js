@@ -29,12 +29,13 @@ router.get('/seller/dashboard', authorize('seller', 'admin'), getSellerDashboard
 router.get('/admin/stats', authorize('admin'), getAdminStats);
 router.get('/sellers/pending', authorize('admin'), getPendingSellers);
 router.get('/', authorize('admin'), getAllUsers);
-router.get('/:id', authorize('admin'), getUserById);
-router.put('/:id/approve', authorize('admin'), approveUser);
 // — Address Routes
 router.post('/addresses', addAddress);
 router.delete('/addresses/:addressId', deleteAddress);
 router.put('/:id/activate', authorize('admin'), toggleUserStatus);
 router.delete('/:id', authorize('admin'), deleteUser);
 router.get('/addresses', getAddresses);
+
+router.get('/:id', authorize('admin'), getUserById);
+router.put('/:id/approve', authorize('admin'), approveUser);
 module.exports = router;
