@@ -26,21 +26,22 @@ const CartPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState([]);
-const [showAddressForm, setShowAddressForm] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
 
-useEffect(() => {
-  if (user) {
-    axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-    }).then(res => setSavedAddresses(res.data.addresses || [])).catch(() => {});
-  }
-}, [user]);
+  useEffect(() => {
+    if (user) {
+      axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+      }).then(res => setSavedAddresses(res.data.addresses || [])).catch(() => {});
+    }
+  }, [user]);
+
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
     phone: user?.phone || '',
     street: '', city: '', state: '', country: 'India', pincode: '',
   });
-  const [step, setStep] = useState('cart'); // 'cart' | 'address' | 'payment'
+  const [step, setStep] = useState('cart');
 
   const subtotal = subtotalRaw;
   const tax = Math.round(subtotal * 0.18);
@@ -63,7 +64,6 @@ useEffect(() => {
 
       const { data } = await createOrder(orderData);
 
-      // ── Open Razorpay Checkout ─────────────────────────────
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || data.razorpayKeyId,
         amount: data.amount,
@@ -93,8 +93,6 @@ useEffect(() => {
         theme: { color: '#1a3a6b' },
       };
 
-      // Load Razorpay script and open modal
-      // Bug fix: check if script already loaded to avoid duplicate injection
       const openRazorpay = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
@@ -143,7 +141,7 @@ useEffect(() => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ── Cart Items / Shipping Form ─────────────────── */}
+          {/* Cart Items / Shipping Form */}
           <div className="lg:col-span-2">
             {step === 'cart' ? (
               <div className="space-y-4">
@@ -179,39 +177,36 @@ useEffect(() => {
                   );
                 })}
               </div>
-              {/* Saved Addresses */}
-{savedAddresses.length > 0 && (
-  <div className="mb-4">
-    <h4 className="font-medium mb-2">Select Saved Address</h4>
-    {savedAddresses.map((addr) => (
-      <div
-        key={addr._id}
-        onClick={() => setShippingAddress({
-          fullName: addr.fullName,
-          phone: addr.phone,
-          street: addr.street,
-          city: addr.city,
-          state: addr.state,
-          country: addr.country,
-          pincode: addr.pincode,
-        })}
-        className="border rounded-lg p-3 mb-2 cursor-pointer hover:border-blue-500"
-      >
-        <span className="font-medium">{addr.label}</span> — {addr.fullName}, {addr.street}, {addr.city} {addr.pincode} 📞 {addr.phone}
-      </div>
-    ))}
-    <button
-      onClick={() => setShowAddressForm(!showAddressForm)}
-      className="text-blue-600 text-sm mt-1"
-    >
-      + Add New Address
-    </button>
-  </div>
-)}
             ) : (
               /* Shipping Address Form */
               <div className="card p-6">
                 <h3 className="font-semibold text-lg mb-4">Shipping Address</h3>
+
+                {/* Saved Addresses Selector */}
+                {savedAddresses.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2">Select Saved Address</h4>
+                    {savedAddresses.map((addr) => (
+                      <div
+                        key={addr._id}
+                        onClick={() => setShippingAddress({
+                          fullName: addr.fullName,
+                          phone: addr.phone,
+                          street: addr.street,
+                          city: addr.city,
+                          state: addr.state,
+                          country: addr.country,
+                          pincode: addr.pincode,
+                        })}
+                        className="border rounded-lg p-3 mb-2 cursor-pointer hover:border-blue-500"
+                      >
+                        <span className="font-medium">{addr.label}</span> — {addr.fullName}, {addr.city} {addr.pincode} 📞 {addr.phone}
+                      </div>
+                    ))}
+                    <p className="text-xs text-gray-400 mb-3">Click an address to auto-fill the form below</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     { label: 'Full Name', key: 'fullName', col: 2 },
@@ -230,54 +225,55 @@ useEffect(() => {
                         onChange={(e) => setShippingAddress((p) => ({ ...p, [key]: e.target.value }))}
                         required
                         onKeyPress={(e) => {
-    if (key === 'phone' || key === 'pincode') {
-      if (!/[0-9]/.test(e.key)) e.preventDefault();
-    }
-  }}
-  maxLength={key === 'phone' ? 10 : key === 'pincode' ? 6 : undefined}
+                          if (key === 'phone' || key === 'pincode') {
+                            if (!/[0-9]/.test(e.key)) e.preventDefault();
+                          }
+                        }}
+                        maxLength={key === 'phone' ? 10 : key === 'pincode' ? 6 : undefined}
                       />
                     </div>
                   ))}
                 </div>
+
+                {/* Save Address Button */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const isDuplicate = savedAddresses.some(addr =>
+                        addr.street === shippingAddress.street &&
+                        addr.city === shippingAddress.city &&
+                        addr.pincode === shippingAddress.pincode
+                      );
+                      if (isDuplicate) {
+                        toast.error('This address is already saved!');
+                        return;
+                      }
+                      await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+                        label: 'Saved Address',
+                        ...shippingAddress,
+                        isDefault: false
+                      }, {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+                      });
+                      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
+                      });
+                      setSavedAddresses(res.data.addresses);
+                      toast.success('Address saved!');
+                    } catch (err) {
+                      toast.error('Failed to save address');
+                    }
+                  }}
+                  className="w-full mt-3 border-2 border-primary-600 text-primary-600 py-2 rounded-lg hover:bg-primary-50 text-sm font-medium"
+                >
+                  💾 Save This Address
+                </button>
               </div>
             )}
           </div>
-          {/* Save Address Button */}
-<button
-  type="button"
-  onClick={async () => {
-    try {
-      const isDuplicate = savedAddresses.some(addr =>
-        addr.street === shippingAddress.street &&
-        addr.city === shippingAddress.city &&
-        addr.pincode === shippingAddress.pincode
-      );
-      if (isDuplicate) {
-        toast.error('This address is already saved!');
-        return;
-      }
-      await axios.post(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-        label: 'Saved Address',
-        ...shippingAddress,
-        isDefault: false
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-      });
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('akshraa_token')}` }
-      });
-      setSavedAddresses(res.data.addresses);
-      toast.success('Address saved!');
-    } catch (err) {
-      toast.error('Failed to save address');
-    }
-  }}
-  className="w-full mt-3 border-2 border-primary-600 text-primary-600 py-2 rounded-lg hover:bg-primary-50 text-sm font-medium"
->
-  💾 Save This Address
-</button>
 
-          {/* ── Order Summary ────────────────────────────────── */}
+          {/* Order Summary */}
           <div>
             <div className="card p-6 sticky top-24">
               <h3 className="font-semibold text-lg mb-5">Order Summary</h3>
