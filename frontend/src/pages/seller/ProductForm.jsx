@@ -20,6 +20,7 @@ const SUB_CATEGORIES = {
 const defaultForm = {
   name: '', description: '', category: 'Home Textiles', subCategory: '',
   price: '', discountedPrice: '', moq: '10', unit: 'pieces',
+  gstRate: '18', minDeliveryDays: '7', shippingCharge: '500', freeShippingAbove: '10000',
   stockType: 'Regular', countInStock: '',
   isFeatured: false, isSurplusDeal: false,
   specifications: { material: '', dimensions: '', weight: '', color: '', washCare: '', origin: 'India' },
@@ -160,6 +161,24 @@ const ProductForm = () => {
                     {['pieces', 'meters', 'kg', 'dozen', 'set'].map((u) => <option key={u}>{u}</option>)}
                   </select>
                 </div>
+                <div>
+  <label className="label">GST Rate (%) *</label>
+  <select className="input" value={form.gstRate} onChange={(e) => change('gstRate', e.target.value)}>
+    {['0', '5', '12', '18', '28'].map(r => <option key={r} value={r}>{r}%</option>)}
+  </select>
+</div>
+<div>
+  <label className="label">Shipping Charge (₹) *</label>
+  <input className="input" type="number" min="0" value={form.shippingCharge} onChange={(e) => change('shippingCharge', e.target.value)} />
+</div>
+<div>
+  <label className="label">Free Shipping Above (₹) *</label>
+  <input className="input" type="number" min="0" value={form.freeShippingAbove} onChange={(e) => change('freeShippingAbove', e.target.value)} />
+</div>
+<div>
+  <label className="label">Min Delivery Days *</label>
+  <input className="input" type="number" min="1" value={form.minDeliveryDays} onChange={(e) => change('minDeliveryDays', e.target.value)} />
+</div>
                 <div>
                   <label className="label">Stock Count *</label>
                   <input className="input" type="number" min="0" value={form.countInStock} onChange={(e) => change('countInStock', e.target.value)} required />

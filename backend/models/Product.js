@@ -81,6 +81,24 @@ const productSchema = new mongoose.Schema(
       min: [1, 'MOQ must be at least 1'],
       default: 10,
     },
+    gstRate: {
+  type: Number,
+  default: 18,
+  min: 0,
+  max: 28,
+},
+minDeliveryDays: {
+  type: Number,
+  default: 7,
+},
+shippingCharge: {
+  type: Number,
+  default: 500,
+},
+freeShippingAbove: {
+  type: Number,
+  default: 10000,
+},
 
     // Unit of measurement (pieces, meters, kg, etc.)
     unit: {
